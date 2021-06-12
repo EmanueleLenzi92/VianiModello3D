@@ -1,0 +1,583 @@
+<html>
+
+<head>
+<meta charset="UTF-8">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<!-- My CSS -->
+<link rel="stylesheet" href="style.css">
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+<!--STYLESHEET-->
+<link type="text/css" rel="stylesheet" href="stylesheet/3dhop.css"/>
+<!--SPIDERGL-->
+<script type="text/javascript" src="js/spidergl.js"></script>
+<!--PRESENTER-->
+<script type="text/javascript" src="js/presenter.js"></script>
+<!--3D MODELS LOADING AND RENDERING-->
+<script type="text/javascript" src="js/nexus.js"></script>
+<script type="text/javascript" src="js/ply.js"></script>
+<!--TRACKBALLS-->
+<script type="text/javascript" src="js/trackball_turntable.js"></script>
+<script type="text/javascript" src="js/trackball_turntable_pan.js"></script>
+<script type="text/javascript" src="js/trackball_pantilt.js"></script>
+<script type="text/javascript" src="js/trackball_sphere.js"></script>
+<!--UTILITY-->
+<script type="text/javascript" src="js/init.js"></script>
+
+
+<script type="text/javascript" src="js/scrollMenu.js"></script>
+
+
+
+</head>
+
+
+
+<body onresize="onPageResize()">
+<div class="container-fluid">
+	
+	
+	<div id="ContenitoreModello">
+		
+		<div id="3dhop" class="tdhop" onmousedown="if (event.preventDefault) event.preventDefault()"><div id="tdhlg"></div>
+		 <div id="toolbar">
+		  <img id="home"        title="Home"                   src="skins/dark/home.png"/><br/>
+		<!--ZOOM-->
+		  <img id="zoomin"      title="Zoom In"                src="skins/dark/zoomin.png"/><br/>
+		  <img id="zoomout"     title="Zoom Out"               src="skins/dark/zoomout.png"/><br/>
+		<!--ZOOM-->
+		<!--LIGHTING-->
+		  <img id="lighting_off" title="Enable Lighting"       src="skins/dark/lighting_off.png" style="position:absolute; visibility:hidden;"/>
+		  <img id="lighting"     title="Disable Lighting"      src="skins/dark/lighting.png"/><br/>
+		<!--LIGHTING-->
+		<!--LIGHT-->
+		  <img id="light_on"    title="Disable Light Control"  src="skins/dark/lightcontrol_on.png" style="position:absolute; visibility:hidden;"/>
+		  <img id="light"       title="Enable Light Control"   src="skins/dark/lightcontrol.png"/><br/>
+		<!--LIGHT-->
+
+
+
+		 </div>
+
+		<!--MEASURE-->
+		 <div id="measure-box" class="output-box">Measured length<hr/><span id="measure-output" class="output-text" onmousedown="event.stopPropagation()">0.0</span></div>
+		<!--MEASURE-->
+
+		<!--POINT PICKING-->
+		 <div id="pickpoint-box" class="output-box">XYZ picked point<hr/><span id="pickpoint-output" class="output-text" onmousedown="event.stopPropagation()">[ 0 , 0 , 0 ]</span></div>
+		<!--POINT PICKING-->
+
+		<!--SECTIONS-->
+		 <div id="sections-box" class="output-box">
+		  <table class="output-table" onmousedown="event.stopPropagation()">
+			<tr><td>Plane</td><td>Position</td><td>Flip</td></tr>
+			<tr>
+				<td><img   id="xplane_on"    title="Disable X Axis Section" src="skins/icons/sectionX_on.png" onclick="sectionxSwitch()" style="position:absolute; visibility:hidden; border:1px inset;"/>
+					<img   id="xplane"       title="Enable X Axis Section"  src="skins/icons/sectionX.png"  onclick="sectionxSwitch()"/><br/></td>
+				<td><input id="xplaneSlider" class="output-input"  type="range"    title="Move X Axis Section Position"/></td>
+				<td><input id="xplaneFlip"   class="output-input"  type="checkbox" title="Flip X Axis Section Direction"/></td></tr>
+			<tr>
+				<td><img   id="yplane_on"    title="Disable Y Axis Section" src="skins/icons/sectionY_on.png" onclick="sectionySwitch()" style="position:absolute; visibility:hidden; border:1px inset;"/>
+					<img   id="yplane"       title="Enable Y Axis Section"  src="skins/icons/sectionY.png"  onclick="sectionySwitch()"/><br/></td>
+				<td><input id="yplaneSlider" class="output-input"  type="range"    title="Move Y Axis Section Position"/></td>
+				<td><input id="yplaneFlip"   class="output-input"  type="checkbox" title="Flip Y Axis Section Direction"/></td></tr>
+			<tr>
+				<td><img   id="zplane_on"    title="Disable Z Axis Section" src="skins/icons/sectionZ_on.png" onclick="sectionzSwitch()" style="position:absolute; visibility:hidden; border:1px inset;"/>
+					<img   id="zplane"       title="Enable Z Axis Section"  src="skins/icons/sectionZ.png"  onclick="sectionzSwitch()"/><br/></td>
+				<td><input id="zplaneSlider" class="output-input"  type="range"    title="Move Y Axis Section Position"/></td>
+				<td><input id="zplaneFlip"   class="output-input"  type="checkbox" title="Flip Z Axis Section Direction"/></td></tr></table>
+		  <table class="output-table" onmousedown="event.stopPropagation()" style="text-align:right;">
+			<tr>
+			 <td>Show planes<input id="showPlane" class="output-input" type="checkbox" title="Show Section Planes" style="bottom:-3px;"/></td>
+			 <td>Show edges<input  id="showBorder" class="output-input" type="checkbox" title="Show Section Edges" style="bottom:-3px;"/></td></tr></table>
+		 </div>
+		<!--SECTIONS-->
+
+		 <canvas id="draw-canvas" style="background-image: url(skins/backgrounds/light.jpg)"/>
+		</div>
+	</div>
+	
+	
+
+	
+	<nav class="navbar stickyTop navbar-default"  >
+	  <div class="container-fluid">
+		<div class="navbar-header">
+		  <a class="navbar-brand" href="index.html">3D Viani</a>
+		</div>
+		<ul class="nav navbar-nav">
+		  <li class="active liMenu" id="modellomenu"><a href="#" onclick="scroll_to('ContenitoreModello', 'modellomenu')">Il modello</a></li>
+		  <li class="liMenu" id="vianimenu"><a href="#" onclick="scroll_to('story', 'vianimenu')" >Lorenzo Viani</a></li>
+		  <li class="liMenu" id="lavoromenu"><a href="#" onclick="scroll_to('work', 'lavoromenu')">Il lavoro</a></li>
+		  <li class="liMenu" id="bibliomenu"><a href="#" onclick="scroll_to('biblio', 'bibliomenu')">Sitografia</a></li>
+		</ul>
+	  </div>
+	</nav>
+	
+	
+	
+	<!--<a onclick="console.log(presenter.getTrackballPosition());">Get Trackball Position </a>-->
+	
+
+
+
+	<div class="row d-flex justify-content-center" id="story">
+		<div class="col">
+
+		  <h1 class="display-4">Lorenzo Viani</h1>
+		  <i>L'importanza culturale del celebre artista Viareggino. Un modello 3D per la galleria d'arte </i>
+		  <hr class="my-4">
+		  <i style="text-decoration:underline; ">Nb: i link arancioni riportano ai riferimenti incisi nel modello 3D</i>
+		  <p><a class="refToModel" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast'); presenter.animateToTrackballPosition([ 0.6692107523598498, 4.113801892514348, 0.015085467193060196, 0.17866799641119074, -0.07172827739259141, 0.731229956053815]);">Lorenzo Viani</a> è stato un artista, nato a Viareggio nel 1882, da cui il GAMC (Galleria d'Arte Moderna e Contemporanea Lorenzo Viani, allestita nel Palazzo delle Muse), situato proprio nel centro di quella città, prende il nome. Durante l'arco della sua vita, Lorenzo ha svolto il mestiere di pittore, scultore e poeta, ma viene ricordato dalla comunità viareggina soprattutto per i suoi dipinti e i suoi disegni, i cui tratti, per lo più cupi e grotteschi, sono ispiriti proprio dalle scene di vita quotidiana della parte povera e "triste" della sua cittadina, che lui spesso frequentava. Molte delle sue famose opere risiedevano proprio in luoghi "celebri" di Viareggio, come la stazione ferroviaria. Adesso, la maggior parte, sono state sostituite con delle riproduzioni, mentre le originali si trovano nel GAMC.</p>
+		  <p>Per informazioni più dettagliate sulla vita di Lorenzo: <a href="https://it.wikipedia.org/wiki/Lorenzo_Viani" target="_blank">pagina wikipedia</a></p>
+					
+					  <div class="imgContent">
+						
+						
+						<figure>
+						  <img class="img-fluid" src="img/img1.jpg" alt="Card image cap">
+						  <figcaption> LAVORATORI DEL MARMO IN VERSILIA </figcaption>
+						</figure>
+
+					  
+						<figure>
+						  <img class="img-fluid" src="img/img2.jpg" alt="Card image cap">
+						  <figcaption> I VELIERI O BOVETTI IN VERSILIA</figcaption>
+						</figure>
+
+				
+
+
+						
+					  </div>
+					
+		
+
+			
+		  <p>Pochi anni dopo la morte dell'artista, <a class="refToModel" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast'); presenter.animateToTrackballPosition([ 89.08721586034912, -2.303325412950876, -0.10228201714814394, 0.19080667046586886, -0.0793098419738153, 0.9303864398141227]);">Arturo Martini</a>, scultore triestino dei primi anni 90', scolpisce il volto dell'artista da poco deceduto. Nel 1939 la scultura viene donata al comune di Viareggio, che si impone di collocarla in una degna sede. Inizialmente però il busto viene tenuto in un polveroso magazzino del comune di Viareggio, e lì rimase fino al 1953, quando i cittadini sollecitarono il comune a esporre la scultura e a dare più valore al loro compaesano. <a class="refToModel" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast'); presenter.animateToTrackballPosition([ 278.27787981254744, 8.009914899403949, -0.11701587656747883, 0.09706683748764643, -0.06620592325202947, 0.6165924678404504]);">Il monumento fu collocato in piazza lungo molo di Viareggio il 10 agosto 1953</a>, giorno di S. Lorenzo, "in perenne contemplazione del suo mare, della sua darsena", come disse il sindaco Lorenzo Marsigli. Per proteggerla dalle interperie e dal vandalismo, nel <a class="refToModel" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast'); presenter.animateToTrackballPosition([ 96.42107563802388, 13.968675968764517, -0.09977332875242531, 0.24286621631507752, -0.10532399896334993, 0.8458058543764752]);">1976 fu sostituita da una riproduzione in marmo del busto</a>, realizzata a Pietrasanta nel laboratorio di Franco Cervietti, da cui è stato generato il modello 3D. L'opera originale fu spostata a Palazzo delle Muse nel GAMC.</p>
+		  <p>Per informazioni più dettagliate su Arturo Martini: <a href="https://it.wikipedia.org/wiki/Arturo_Martini" target="_blank">pagina wikipedia</a></p>
+			
+			<div class="imgContent">
+						
+						
+						<figure>
+						  <img class="img-fluid" src="img/img4.jpg" alt="Card image cap">
+						  <figcaption> LORENZO VIANI: OGGETTO DEL BUSTO </figcaption>
+						</figure>
+
+					  
+						<figure>
+						  <img class="img-fluid" src="img/img3.jpg" alt="Card image cap">
+						  <figcaption> ARTURO MARTINI: LO SCULTORE DEL BUSTO ORIGINALE</figcaption>
+						</figure>
+
+				
+
+
+						
+					  </div>
+	 
+	 
+	 
+	 
+	 
+		  <p>Il sito web del GAMC merita di avere un modello 3D del suo più famoso fornitore di opere e per di più dell'artista da cui prende il nome. Un buon proposito è quello di realizzare il modello 3D del busto di Lorenzo Viani sul molo di Viareggio e di donarlo alla galleria d'arte, così che possa avere una pagina web accattivante per gli utenti interessati alla sua storia.</p>
+		
+		<div id="videoCont">
+		<video width="60%" controls>
+			<source src="V.mp4" type="video/mp4">
+			
+			Your browser does not support HTML5 video.
+		</video>
+		<figcaption>LA PIAZZA RIPRESA DALL'ALTO</figcaption>
+		</div>
+		
+	 
+	 </div>
+	
+	
+	</div>
+	
+	
+	
+	<h1 class="display-4" id="work">La costruzione del modello</h1>
+		  <i>I problemi riscontrati e la soluzione per la costruzione del modello 3D</i>
+		  <hr class="my-4">
+	
+	
+	<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="false">
+	  <ol class="carousel-indicators">
+		<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="4"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="5"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="6"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="7"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="8"></li>
+		<li data-target="#carouselExampleIndicators" data-slide-to="9"></li>
+	  </ol>
+	  <div class="carousel-inner">
+		<div class="item active">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>L'idea iniziale</h1>
+					<p>Il primo passo è stato quello di fare le foto. Inizialmente sono state scattate 120 foto attorno alla statua, cercando di coprire il più possibile tutte le porzioni. Gli oggetti utilizzati sono stati: la camera (Sony a6013) e una scala a 4 gradini per cercare di fotografare dall'alto. </p>
+					<div class="imgSlide">
+						<a href="javascript:;" ><img class="pop" src="img/v1.jpg"> </a>
+						<a href="javascript:;" ><img class="pop" src="img/v2.jpg"> </a>
+						<a href="javascript:;" ><img class="pop" src="img/v3.jpg"> </a>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					
+					<h2>I problemi di questa idea</h2>
+					<p>La statua si trova in una piazza esposta al sole. Con il sole estivo sempre presente, è risultato difficile nascondere l'ombra del fotografo, che, davanti o dietro a seconda dell'ora scelta, finiva sempre per investire l'oggetto</p>
+					<p>La statua è molto bianca. E' risultato difficile gestire le ombre presenti sul volto con altre parti invece completamente iluminate dal sole (ad esempio la testa in alto).</p>
+					<p>Il busto è alto 2 metri circa. L'idea iniziale era quella di riprendere dall'alto il piu possibile l'oggetto grazie alla scala, e far chiudere la part superiore della testa a meshlab</p>
+					<div class="imgSlide">
+						<a href="javascript:;" > <img class="pop" src="img/p1.png"> </a>
+						<a href="javascript:;" > <img class="pop" src="img/p2.png"> </a>
+						<a href="javascript:;" > <img class="pop" src="img/p3.png"> </a>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>Fotogrammetria da drone</h2>
+					<p>La soluzione definitiva per scattare le foto dall'alto e ricoprire la parte superiore del busto, è stata quella di utilizzare la fotogrammetria da drone. Sono state scattate 75 foto</p>
+					<div class="imgSlide">
+						<a href="javascript:;" > <img  class="pop irotate" src="img/dr1.jpg"></a>
+						<a href="javascript:;" > <img class="pop" src="img/dr2.jpg"></a>
+						<a href="javascript:;" > <img class="pop" src="img/dr3.jpg"></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>I problemi della fotogrammetria da drone</h2>
+					<p>Se non c'era esperienza a generare modelli 3D da normali fotocamere, con il drone ce n'è ancora meno; ne sono seguiti questi problemi:</p>
+					<p>è stata generata la nuvola di punti dalle 75 foto. La testa è stata tappata discetamente, ma il viso è venuto molto sporco.</p>
+					<p>Forse per le ombre e, stavolta, per le poche foto dal basso</p>
+					<div class="imgSlide">
+						<a href="javascript:;" > <img class="pop" src="img/drsb0.png"> </a>
+						<a href="javascript:;" > <img class="pop" src="img/drsb1.png"> </a>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>La soluzione definitiva</h2>
+					<p>L'idea è stata quella di prendere le foto più significative scattate con la fotocamera (un centinaio) e quelle scattate dall'alto col drone (una trentina).</p>
+					<p>Alla fine sono state usate 151 foto. Il fatto che siano state scattate da 2 dispositivi diversi, non ha creato problemi</p>
+					<p>Le luci e le ombre sono le stesse, perchè entrambe le volte, le foto sono state scattate tra le 19:00 e le 20:00 di sera</p>
+					<div class="imgSlide">
+	
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>Creazione nuvole di punti e mesh</h2>
+					<p>Con il programma Metashape sono state allineate le 151 foto con "accuracy" high. Ne è conseguita la prima nuvola di punti sparsa. Il processo ha impiegato non più di 3 minuti.</p>
+					<p>Dalla nuvola di punti sparsa si è passati alla creazione della depth map e alla generazione della nuvola densa con qualità high. In tutto il processo ha impiegato circa 5 ore</p>
+					<p>Per qualche motivo, non è stato possibile esportare la nuvola di punti su meshlab (sia con le coordinate WGS88 sia locali). Sono state create quindi prima le mesh su metashape (depth 13) dopo una pulizia sulla nuvola di punti</p>
+					<div class="imgSlide">
+						<a href="javascript:;" ><img class="pop" src="img/nuvspa.png"></a>
+						<a href="javascript:;" ><img class="pop" src="img/nuvden.png"></a>
+						<a href="javascript:;" ><img class="pop" src="img/nuvdensprob.png"></a>
+						<br/>
+						<a href="javascript:;" ><img class="pop" src="img/mesh.png"></a>
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>Pulizia su meshlab</h2>
+					<p>La mesh è stata esportata su meshlab per una pulizia più accurata. In particolare:</p>
+					<p>Sono state eliminate i pezzi troppo piccoli e le faccie doppie</p>
+					<p>Tramite la selezione invertita, sono state eliminate tutte le mesh che non facevano parte del busto</p>
+					<p>E' stato applicato un leggero smoothing (soprattutto per la parte destra della faccia, venuta un po' sporca a causa dell'ombra)</p>
+					<div class="imgSlide">
+						<a href="javascript:;" ><img class="pop" src="img/smooth1.png"></a>
+						<a href="javascript:;" ><img class="pop" src="img/smooth2.png"></a>
+
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>Creazione della texture</h2>
+					<p>Dopo la pulizia completa, il modello è stato riportato su metashape per creare la texture. Il processo ha impiegato una decina di minuti.</p>
+					<p>Il modello è nettamente migliorato anche nelle zone non venute "benissimo"</p>
+					<div class="imgSlide">
+						<a href="javascript:;" > <img class="pop" src="img/tex1.png"> </a>
+						<a href="javascript:;"> <img class="pop" src="img/tex2.png"> </a>
+						<a href="javascript:;" >  <img class="pop" src="img/tex3.png"> </a>
+
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>Dimensioni e posizionamento</h2>
+					<p>Una volta texturizzato, il modello è stato portato nuovamente su meshlab per posizionarlo dritto rispetto agli assi e per riportarlo alle dimensioni reali</p>
+					<p>Per posizionarlo, sono stati usati i manipolatori mediante una serie di spostamenti e rotazioni attorno agli assi </p>
+					<p>Per riportare le dimensioni reali, è stato usato il metro ed è stato calcolato il rapporto tra il numero della scala arbitraria con quello della scala reale in millimetri</p>
+					<div class="imgSlide">
+						<a href="javascript:;" > <img class="pop" src="img/scale1.png"> </a>
+						<a href="javascript:;"> <img class="pop" src="img/scale2.png"> </a>
+						
+
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<div class="htmlInItem bg-econdary text-white text-center">
+				<div class="contentSlider jumbotron vertical-center">
+					<h2>Nexus e 3DHOP</h2>
+					<p>L'ultimo passo è stato quello di creare il modello nexus</p>
+					<p>Il modello nexus è stato compresso</p>
+					<p>E' stato in fine inserito in 3DHOP</p>
+					<div class="imgSlide">
+
+
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" ></span>
+		
+	  </a>
+	  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+		<span class="carousel-control-next-icon"></span>
+		
+	  </a>
+	</div>
+	
+	<!--bootstrap modal image-->
+	<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">Immagine</h4>
+		  </div>
+		  <div class="modal-body">
+			<img src="" id="imagepreview" >
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+
+
+	<h1 class="display-4" id="biblio">Sitografia</h1>
+		  <i>Dove sono state prese le informazioni</i>
+		  <hr class="my-4">	
+	
+	<a href="https://it.wikipedia.org/wiki/Lorenzo_Viani" target="_blank">Lorenzo Viani wikipedia</a> </br> </br>
+	<a href="https://it.wikipedia.org/wiki/Arturo_Martini" target="_blank">Arturo Martini wikipedia</a> </br> </br>
+	<a href="https://gamc.it/" target="_blank">GAMC Lorenzo Viani</a> </br> </br>
+	<a href="https://ricerca.gelocal.it/iltirreno/archivio/iltirreno/2014/08/11/LV_14_AA.html" target="_blank">Il Tirreno</a>
+	
+	
+	
+
+	
+
+
+</div>
+
+
+
+<!-- Footer -->
+<footer class="foote page-footer font-small blue">
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">2019; Lenzi Emanuele; Progetto per Grafica 3d per i beni culturali
+
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+</body>
+
+<script>
+//image model
+$(document).ready(function () {
+$(".pop").on("click", function() {
+	var a= $(this).attr('src')
+
+   $('#imagepreview').attr('src', $(this).attr('src')); // here asign the image to the modal when the user click the enlarge link
+   $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+});
+});
+</script>
+
+
+<script type="text/javascript">
+var presenter = null;
+
+function setup3dhop() {
+	presenter = new Presenter("draw-canvas");
+
+	presenter.setScene({
+		meshes: {
+			"mesh_1" : { url: "models/viani.nxz" }
+		},
+		modelInstances : {
+			"model_1" : { 
+				mesh  : "mesh_1",
+				color : [0.8, 0.7, 0.75]
+			}
+		},
+		trackball: {
+			type : TurntablePanTrackball,
+			trackOptions : {
+				startPhi: 35.0,
+				startTheta: 15.0,
+				startDistance: 2.5,
+				minMaxPhi: [-180, 180],
+				minMaxTheta: [-30.0, 70.0],
+				minMaxDist: [0.5, 3.0]
+			}
+		}
+	});
+
+//--MEASURE--
+	presenter._onEndMeasurement = onEndMeasure;
+//--MEASURE--
+
+//--POINT PICKING--
+	presenter._onEndPickingPoint = onEndPick;
+//--POINT PICKING--
+
+//--SECTIONS--
+	sectiontoolInit();
+//--SECTIONS--
+}
+
+function actionsToolbar(action) {
+	if(action=='home') presenter.resetTrackball();
+//--FULLSCREEN--
+	else if(action=='full'  || action=='full_on') fullscreenSwitch();
+//--FULLSCREEN--
+//--ZOOM--
+	else if(action=='zoomin') presenter.zoomIn();
+	else if(action=='zoomout') presenter.zoomOut();
+//--ZOOM--
+//--LIGHTING--
+	else if(action=='lighting' || action=='lighting_off') { presenter.enableSceneLighting(!presenter.isSceneLightingEnabled()); lightingSwitch(); }
+//--LIGHTING--
+//--LIGHT--
+	else if(action=='light' || action=='light_on') { presenter.enableLightTrackball(!presenter.isLightTrackballEnabled()); lightSwitch(); }
+//--LIGHT--
+//--CAMERA--
+	else if(action=='perspective' || action=='orthographic') { presenter.toggleCameraType(); cameraSwitch(); }
+//--CAMERA--
+//--COLOR--
+	else if(action=='color' || action=='color_on') { presenter.toggleInstanceSolidColor(HOP_ALL, true); colorSwitch(); }
+//--COLOR--
+//--MEASURE--
+	else if(action=='measure' || action=='measure_on') { presenter.enableMeasurementTool(!presenter.isMeasurementToolEnabled()); measureSwitch(); }
+//--MEASURE--
+//--POINT PICKING--
+	else if(action=='pick' || action=='pick_on') { presenter.enablePickpointMode(!presenter.isPickpointModeEnabled()); pickpointSwitch(); }
+//--POINT PICKING--
+//--SECTIONS--
+	else if(action=='sections' || action=='sections_on') { sectiontoolReset(); sectiontoolSwitch(); }
+//--SECTIONS--
+}
+
+//--MEASURE--
+function onEndMeasure(measure) {
+	// measure.toFixed(2) sets the number of decimals when displaying the measure
+	// depending on the model measure units, use "mm","m","km" or whatever you have
+	$('#measure-output').html(measure.toFixed(2) + "mm"); 
+}
+//--MEASURE--
+
+//--PICKPOINT--
+function onEndPick(point) {
+	// .toFixed(2) sets the number of decimals when displaying the picked point	
+	var x = point[0].toFixed(2);
+	var y = point[1].toFixed(2);
+	var z = point[2].toFixed(2);
+    $('#pickpoint-output').html("[ "+x+" , "+y+" , "+z+" ]");
+} 
+//--PICKPOINT--	
+
+$(document).ready(function(){
+	init3dhop();
+
+	setup3dhop();
+	
+	moveToolbar(20,20);
+	
+	
+	
+});
+</script>
+
+<script>
+// Page Resize Function
+function onPageResize() {
+    resizeCanvas($('#3dhop').parent().width(),$('#3dhop').parent().height());
+    presenter.repaint();
+}
+
+</script>
+
+
+
+</html>
