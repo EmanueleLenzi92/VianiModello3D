@@ -1,0 +1,78 @@
+p{font-size: 1.3em}
+
+.refToModel{cursor:pointer; color: orange}
+.refToModel:hover{color: orange; text-decoration:underline}
+
+.stickyTop {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index:1
+
+}
+
+#story {margin: 0px !important}
+
+.irotate {transform: rotate(180deg);}
+
+#story figure {
+    width: 45%;
+    display: inline-block;
+    margin: 20px;
+    text-align: center;
+    padding: 0;
+}
+figcaption{font-style: italic; padding-top:10px;  color: grey;}
+
+#story img{width:100%}
+
+#videoCont{text-align:center; margin-top:30px; margin-bottom:30px}
+
+.imgContent{width:100%}
+
+#contenitoreModello{
+	width: 100%;
+	height: 70%;
+}
+
+
+
+#carouselExampleIndicators{width:100%; height:100% !important}
+.item{width:100%; height:100% !important;}
+.htmlInItem{width:100%; height:100% !important;}
+.bg-econdary{background-color: #e7e7e7 !important;}
+.contentSlider{width:90%; height:100%; margin-left:auto; margin-right:auto; /*border:1px solid green;*/ }
+
+.imgSlide{width:100%; height:100%;}
+.imgSlide img{width: 30%; height:auto; padding:5px;}
+
+.carousel-indicators .active{ 
+	width: 20px !important;
+    height: 20px !important;
+	background-color: black !important;
+}
+
+.carousel-indicators li{
+	width: 18px !important;
+    height: 18px !important;
+	border: 1px solid black !important;
+	
+}
+
+
+
+.modal-dialog {
+  width: 100% !important;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.model-body{width: 100% !important; height: 100% !important;}
+
+#imagepreview{width: 100% !important;}
+
+
+.foote{margin-top:30px; background-color:#504F4F; padding-top:50px; padding-bottom: 50px}
+
+
